@@ -4,7 +4,7 @@ var port = 3000,
     debug = require('debug')('lookup:init'),
     ipConverter = require('./lib/ip'),
     ipParser = require('./lib/ipParser'),
-
+    lookup = require('./lib/lookup'),
     ipList = []
 ;
 
@@ -14,21 +14,21 @@ app.get('/api/v1/ip/:ip', function(req, res, next) {
     ;
 
     if(isNaN(ipLong)) {
-        res.json({ip: ip, country: null});
+        res.json({country: null});
         return;
     }
 
     debug('Searching for %s as %s', ip, ipLong);
 
-    getCountry(ipLong, function(err, country) {
+    lookup.getCountry(ipLong, ipList, function(err, country) {
         debug('%s, %s', err, country);
 
         if (err) {
-            res.json({ip: ip, country: null});
+            res.json({country: null});
             return;
         }
 
-        res.json({ip: ip, country: country});
+        res.json({country: country});
     });
 });
 
@@ -40,21 +40,3 @@ ipParser.getStruct(__dirname + '/var/partial.csv', function(err, list) {
     });
 
 });
-
-
-function getCountry(ipLong, callback) {
-    var found = false;
-
-    ipList.forEach(function(record) {
-        if (ipLong >= record.first && ipLong <= record.last) {
-            found = true;
-            callback(null, record.country);
-            return;
-        }
-    });
-
-    if (!found) { // temporal fix...
-        callback('es', null);
-        
-    }
-}
