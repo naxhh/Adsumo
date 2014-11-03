@@ -13,10 +13,16 @@ app.get('/api/v1/ip/:ip', function(req, res, next) {
         ipLong = ipConverter.toLong(ip)
     ;
 
+    if(isNaN(ipLong)) {
+        res.json({ip: ip, country: null});
+        return;
+    }
+
     debug('Searching for %s as %s', ip, ipLong);
 
     getCountry(ipLong, function(err, country) {
         debug('%s, %s', err, country);
+
         if (err) {
             res.json({ip: ip, country: null});
             return;
@@ -24,7 +30,6 @@ app.get('/api/v1/ip/:ip', function(req, res, next) {
 
         res.json({ip: ip, country: country});
     });
-
 });
 
 ipParser.getStruct(__dirname + '/var/partial.csv', function(err, list) {
@@ -38,12 +43,18 @@ ipParser.getStruct(__dirname + '/var/partial.csv', function(err, list) {
 
 
 function getCountry(ipLong, callback) {
+    var found = false;
+
     ipList.forEach(function(record) {
         if (ipLong >= record.first && ipLong <= record.last) {
+            found = true;
             callback(null, record.country);
             return;
         }
     });
 
-    callback('es', null);
+    if (!found) { // temporal fix...
+        callback('es', null);
+        
+    }
 }
