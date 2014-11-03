@@ -2,7 +2,6 @@ var port = 3000,
     express = require('express'),
     app = express(),
     debug = require('debug')('lookup:init'),
-    ipConverter = require('./lib/ip'),
     ipParser = require('./lib/ipParser'),
     lookup = require('./lib/lookup'),
     ipList = []
@@ -10,7 +9,7 @@ var port = 3000,
 
 app.get('/api/v1/ip/:ip', function(req, res, next) {
     var ip = req.param("ip"),
-        ipLong = ipConverter.toLong(ip)
+        ipLong = ipParser.ipToLong(ip)
     ;
 
     if(isNaN(ipLong)) {
