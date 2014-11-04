@@ -3,18 +3,12 @@ var port = 3000,
     app = express(),
     debug = require('debug')('lookup:init'),
     ipParser = require('./lib/ipParser'),
+    LookupLib = require('./lib/lookup'),
     Lookup = null
 ;
 
 app.get('/api/v1/ip/:ip', function(req, res, next) {
-    var ip = req.param("ip")
-        //,ipLong = ipParser.ipToLong(ip)
-    ;
-
-    //if(isNaN(ipLong)) {
-    //    res.json({country: null});
-    //    return;
-    //}
+    var ip = req.param("ip");
 
     debug('Searching for %s', ip);
 
@@ -30,8 +24,8 @@ app.get('/api/v1/ip/:ip', function(req, res, next) {
     });
 });
 
-ipParser.getStruct(__dirname + '/var/partial.csv', function(err, lookup) {
-    Lookup = lookup;
+ipParser.getStruct(__dirname + '/var/partial.csv', function(err, filesList) {
+    Lookup = new LookupLib(filesList);
 
     app.listen(port, function() {
         debug('App listening in %d', port)
