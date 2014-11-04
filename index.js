@@ -4,7 +4,8 @@ var port = 3000,
     debug = require('debug')('lookup:init'),
     ipParser = require('./lib/ipParser'),
     LookupLib = require('./lib/lookup'),
-    Lookup = null
+    Cache = require('./lib/cache'),
+    Lookup
 ;
 
 app.get('/api/v1/ip/:ip', function(req, res, next) {
@@ -25,7 +26,7 @@ app.get('/api/v1/ip/:ip', function(req, res, next) {
 });
 
 ipParser.getStruct(__dirname + '/var/partial.csv', function(err, filesList) {
-    Lookup = new LookupLib(filesList);
+    Lookup = new LookupLib(filesList, new Cache);
 
     app.listen(port, function() {
         debug('App listening in %d', port)
