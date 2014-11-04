@@ -1,7 +1,8 @@
-var port = 3000,
+var debug = require('debug')('lookup:init'),
+    config = require('./config'),
+    port = config.port || 3000,
     express = require('express'),
     app = express(),
-    debug = require('debug')('lookup:init'),
     ipParser = require('./lib/ipParser'),
     LookupLib = require('./lib/lookup'),
     Cache = require('./lib/cache'),
@@ -25,8 +26,8 @@ app.get('/api/v1/ip/:ip', function(req, res, next) {
     });
 });
 
-ipParser.getStruct(__dirname + '/var/partial.csv', function(err, filesList) {
-    Lookup = new LookupLib(filesList, new Cache);
+ipParser.getStruct(__dirname + '/var/partial.csv', config, function(err, filesList) {
+    Lookup = new LookupLib(filesList, new Cache, config);
 
     app.listen(port, function() {
         debug('App listening in %d', port)
