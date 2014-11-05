@@ -27,7 +27,7 @@ app.get('/api/v1/ip/:ip', function(req, res, next) {
 });
 
 ipParser.getStruct(__dirname + '/var/partial.csv', config, function(err, filesList) {
-    Lookup = new LookupLib(filesList, new Cache, config);
+    Lookup = new LookupLib(filesList, Cache.getInstance(), config);
 
     app.listen(port, function() {
         debug('App listening in %d', port)
